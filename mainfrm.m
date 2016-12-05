@@ -120,7 +120,7 @@ popup_sel_index = get(handles.popupmenu1, 'Value');
 switch popup_sel_index
     case 1        %bisection
         %solver=
-        %setTableCol(soler.getLabels())
+        %setTableCol(solver.getLabels())
         display('test1')
     case 2        %false position  
         display('test2')
@@ -308,7 +308,7 @@ global solver;
 citer = citer+1;
 % solver.plotState()
 % addRow(solver.getStateData())
-%if(citer=miter || solver.appErr <= err) terminate(handles)
+%if(citer=miter || solver.getAppError() <= err) terminate(handles)
 set(handles.citerLabel,'string',citer);
 %set time to solver.getTotalTime()
 
