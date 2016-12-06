@@ -22,7 +22,7 @@ function varargout = mainfrm(varargin)
 
 % Edit the above text to modify the response to help mainfrm
 
-% Last Modified by GUIDE v2.5 05-Dec-2016 20:17:58
+% Last Modified by GUIDE v2.5 06-Dec-2016 15:57:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -66,7 +66,9 @@ end
 set(findall(handles.stPanel, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.inputPanel, '-property', 'enable'), 'enable', 'on')
 set(handles.solveBtn,'Enable','on')
-clearTable(handles.sttable)
+clearTable(handles.stTable)
+updateGUI(1,handles)
+
 
 % UIWAIT makes mainfrm wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -101,43 +103,21 @@ global solver;
 
 canceled = 0;
 citer = 0;
-miter = str2num(get(handles.miterBox,'string'))
-err = str2double(get(handles.errBox,'string'))
+miter = str2num(get(handles.miterBox,'string'));
+err = str2double(get(handles.errBox,'string'));
 
 if(~isint(miter))
-    miter = 50
+    miter = 50;
 end
 if isnan(err)
-    err = 0.01
+    err = 0.00001;
 end
 
-% clearTable(handles.sttable);
-%setTableCol(handles.sttable,[{'c1'},{'c2'},{'c3'}])
-%addRow(handles.sttable,[1,2,3])
+set(handles.miterBox,'string', miter)
+set(handles.errBox,'string', err)
+clearTable(handles.stTable);
 
-% create solver instance
-popup_sel_index = get(handles.popupmenu1, 'Value');
-switch popup_sel_index
-    case 1        %bisection
-        %solver=
-        %setTableCol(solver.getLabels())
-        display('test1')
-    case 2        %false position  
-        display('test2')
-    case 3        %fixed point
-        display('test3')
-    case 4        %newton
-        display('test4')
-    case 5        %secant
-        display('test5')
-end
-
-
-% --------------------------------------------------------------------
-function FileMenu_Callback(hObject, eventdata, handles)
-% hObject    handle to FileMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%solver.setReq(getReq(handles.reqTable))
 
 % --------------------------------------------------------------------
 function PrintMenuItem_Callback(hObject, eventdata, handles)
@@ -155,7 +135,8 @@ function popupmenu1_Callback(hObject, eventdata, handles)
 
 % Hints: contents = get(hObject,'String') returns popupmenu1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu1
-
+idx = get(handles.popupmenu1, 'Value');
+updateGUI(idx, handles)
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu1_CreateFcn(hObject, eventdata, handles)
@@ -169,17 +150,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
      set(hObject,'BackgroundColor','white');
 end
 
-
-
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function edit1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit1 (see GCBO)
@@ -191,7 +161,6 @@ function edit1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 % --- Executes on button press in finBtn.
 function finBtn_Callback(hObject, eventdata, handles)
@@ -230,15 +199,6 @@ global canceled;
 canceled = 1;
 terminate(handles);
 
-function miterBox_Callback(hObject, eventdata, handles)
-% hObject    handle to miterBox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of miterBox as text
-%        str2double(get(hObject,'String')) returns contents of miterBox as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function miterBox_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to miterBox (see GCBO)
@@ -250,17 +210,6 @@ function miterBox_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function errBox_Callback(hObject, eventdata, handles)
-% hObject    handle to errBox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of errBox as text
-%        str2double(get(hObject,'String')) returns contents of errBox as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function errBox_CreateFcn(hObject, eventdata, handles)
@@ -280,6 +229,16 @@ for i=1:length(vals)
    names = [names vals(i)]; 
 end
 set(htable,'ColumnName',names)
+
+function setReq(htable, vals)
+clearTable(htable)
+for i=1:length(vals)
+   addRow(htable, [vals(i) {''}])
+end
+
+function req = getReq(htable)
+data = get(htable,'Data');
+req = data(:,2);
 
 function addRow(htable, vals)
 oldData = get(htable,'Data');
@@ -304,13 +263,33 @@ global err;
 global citer;
 global solver;
 
-% solver.step()
+% solver.nextStep()
 citer = citer+1;
 % solver.plotState()
-% addRow(solver.getStateData())
-%if(citer=miter || solver.getAppError() <= err) terminate(handles)
+% addRow(solver.stateData)
+%if(citer == miter || solver.getAppError() <= err)
+%terminate(handles)
+%end
 set(handles.citerLabel,'string',citer);
-%set time to solver.getTotalTime()
+%set(handles.timeLabel, solver.totalTime)
+
+function updateGUI(method, handles)
+    global solver;    
+    switch method
+    case 1        %bisection
+        %solver=
+        %setTableCol(solver.dataLabels)
+        %setReq(handles.reqTable, solver.reqLabels)        
+        display('test1')
+    case 2        %false position  
+        display('test2')
+    case 3        %fixed point
+        display('test3')
+    case 4        %newton
+        display('test4')
+    case 5        %secant
+        display('test5')
+    end
 
 function check = isint(val)
 check = ~isempty(val) ...
