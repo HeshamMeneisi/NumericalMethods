@@ -125,13 +125,17 @@ clearTable(handles.stTable);
 idx = get(handles.popupmenu1, 'Value');
 switch idx
     case 1        %bisection    
-        display('test1')
+        display('Solving using Bisection')        
+        solver = bisectionSolver(eqn, getReq(handles.reqTable));
     case 2        %false position  
-        display('test2')
+        display('Solving using False Position')        
+        solver = falsePosSolver(eqn, getReq(handles.reqTable));
     case 3        %fixed point
-        display('test3')
+        display('Solving using Fixed Point')        
+        solver = fixedPointSolver(eqn, getReq(handles.reqTable));
     case 4        %newton
-        display('test4')
+        display('Solving using Newton-Raphson')
+        solver = newtonRaphSolver(eqn, getReq(handles.reqTable));
     case 5        %secant
         display('Solving using Secant')        
         solver = secantSolver(eqn, getReq(handles.reqTable));
@@ -297,13 +301,17 @@ set(handles.timeLabel, 'String', solver.totalTime)
 function updateGUI(method, handles)  
     switch method
     case 1        %bisection    
-        display('test1')
+        setReq(handles.reqTable, bisectionSolver.reqLabels)
+        setTableCol(handles.stTable, secantSolver.dataLabels)
     case 2        %false position  
-        display('test2')
+        setReq(handles.reqTable, falsePosSolver.reqLabels)
+        setTableCol(handles.stTable, secantSolver.dataLabels)
     case 3        %fixed point
-        display('test3')
+        setReq(handles.reqTable, fixedPointSolver.reqLabels)
+        setTableCol(handles.stTable, secantSolver.dataLabels)
     case 4        %newton
-        display('test4')
+        setReq(handles.reqTable, newtonRaphSolver.reqLabels)
+        setTableCol(handles.stTable, secantSolver.dataLabels)
     case 5        %secant       
         setReq(handles.reqTable, secantSolver.reqLabels)
         setTableCol(handles.stTable, secantSolver.dataLabels)
