@@ -1,17 +1,18 @@
 classdef (Abstract) solver < handle
     
+    properties (Abstract, Constant, GetAccess = public)
+        reqLabels
+        dataLabels 
+    end
     properties (SetAccess = protected)
         lastValue
         currentValue
-        reqLabels
-        dataLabels
         stateData
         totalTime
     end
     
     methods (Abstract)
         plotState(obj)
-        setReq(obj,req)
     end
     
     methods (Abstract, Access = protected)        
@@ -22,16 +23,10 @@ classdef (Abstract) solver < handle
         function nextStep(obj)  
             tic;
             step(obj);         
-            obj.totalTime = obj.totalTime + toc;
+            obj.totalTime = obj.totalTime + toc;            
         end
         function approximateError = getAppError(obj)
-            approximateError=(obj.currentValue-obj.lastValue)/obj.currentValue;
-        end
-        function objectLabel=get.reqLabels(obj)
-            objectLabel=obj.reqLabels;
-        end
-        function objectLabel=get.dataLabels(obj)
-            objectLabel=obj.dataLabels;
+            approximateError = abs((obj.currentValue-obj.lastValue)/obj.currentValue);
         end
         function objectData=get.stateData(obj)
             objectData=obj.stateData;

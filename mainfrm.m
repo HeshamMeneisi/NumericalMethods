@@ -22,7 +22,7 @@ function varargout = mainfrm(varargin)
 
 % Edit the above text to modify the response to help mainfrm
 
-% Last Modified by GUIDE v2.5 06-Dec-2016 15:57:31
+% Last Modified by GUIDE v2.5 06-Dec-2016 19:23:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -95,16 +95,21 @@ set(findall(handles.inputPanel, '-property', 'enable'), 'enable', 'off')
 axes(handles.axes1);
 cla;
 
-global canceled;
+global cancelled;
 global miter;
 global err;
 global citer;
 global solver;
 
-canceled = 0;
+cancelled = 0;
 citer = 0;
-miter = str2num(get(handles.miterBox,'string'));
-err = str2double(get(handles.errBox,'string'));
+miter = str2num(get(handles.miterBox,'String'));
+err = str2double(get(handles.errBox,'String'));
+
+eqnstr = get(handles.eqnBox, 'String');
+eqnstr = ['@(x)' eqnstr];
+
+eqn = str2func(eqnstr)
 
 if(~isint(miter))
     miter = 50;
@@ -113,11 +118,24 @@ if isnan(err)
     err = 0.00001;
 end
 
-set(handles.miterBox,'string', miter)
-set(handles.errBox,'string', err)
+set(handles.miterBox,'String', miter)
+set(handles.errBox,'String', err)
 clearTable(handles.stTable);
 
-%solver.setReq(getReq(handles.reqTable))
+idx = get(handles.popupmenu1, 'Value');
+switch idx
+    case 1        %bisection    
+        display('test1')
+    case 2        %false position  
+        display('test2')
+    case 3        %fixed point
+        display('test3')
+    case 4        %newton
+        display('test4')
+    case 5        %secant
+        display('Solving using Secant')        
+        solver = secantSolver(eqn, getReq(handles.reqTable));
+end
 
 % --------------------------------------------------------------------
 function PrintMenuItem_Callback(hObject, eventdata, handles)
@@ -151,8 +169,8 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function eqnBox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to eqnBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -167,18 +185,13 @@ function finBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to finBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global canceled;
-global miter;
-global err;
+global cancelled;
 global citer;
-global solver;
+global miter;
 
 set(handles.stepBtn,'Enable','off')
-for i = citer:miter-1
-   if(canceled == 1)
-       break;
-   end
-   step(handles); 
+
+while ~(cancelled || step(handles))
 end
 terminate(handles)
 
@@ -195,8 +208,8 @@ function cancelBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to cancelBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global canceled;
-canceled = 1;
+global cancelled;
+cancelled = 1;
 terminate(handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -238,7 +251,11 @@ end
 
 function req = getReq(htable)
 data = get(htable,'Data');
-req = data(:,2);
+data = data(:,2);
+req = [];
+for i = 1:length(data)
+    req = [req str2double(data{i})];
+end
 
 function addRow(htable, vals)
 oldData = get(htable,'Data');
@@ -257,29 +274,29 @@ set(findall(handles.stPanel, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.inputPanel, '-property', 'enable'), 'enable', 'on')
 set(handles.solveBtn,'Enable','on')
 
-function step(handles)
+function done = step(handles)
 global miter;
 global err;
 global citer;
 global solver;
 
-% solver.nextStep()
+solver.nextStep()
 citer = citer+1;
-% solver.plotState()
-% addRow(solver.stateData)
-%if(citer == miter || solver.getAppError() <= err)
-%terminate(handles)
-%end
-set(handles.citerLabel,'string',citer);
-%set(handles.timeLabel, solver.totalTime)
+solver.plotState()
+addRow(handles.stTable, solver.stateData)
+ep = solver.getAppError();
+if(citer == miter || isnan(ep) || ep <= err)
+    done = 1;
+    terminate(handles)
+else
+    done = 0;
+end
+set(handles.citerLabel,'String', citer);
+set(handles.timeLabel, 'String', solver.totalTime)
 
-function updateGUI(method, handles)
-    global solver;    
+function updateGUI(method, handles)  
     switch method
-    case 1        %bisection
-        %solver=
-        %setTableCol(solver.dataLabels)
-        %setReq(handles.reqTable, solver.reqLabels)        
+    case 1        %bisection    
         display('test1')
     case 2        %false position  
         display('test2')
@@ -287,8 +304,9 @@ function updateGUI(method, handles)
         display('test3')
     case 4        %newton
         display('test4')
-    case 5        %secant
-        display('test5')
+    case 5        %secant       
+        setReq(handles.reqTable, secantSolver.reqLabels)
+        setTableCol(handles.stTable, secantSolver.dataLabels)
     end
 
 function check = isint(val)
