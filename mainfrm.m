@@ -302,16 +302,16 @@ function updateGUI(method, handles)
     switch method
     case 1        %bisection    
         setReq(handles.reqTable, bisectionSolver.reqLabels)
-        setTableCol(handles.stTable, secantSolver.dataLabels)
+        setTableCol(handles.stTable, bisectionSolver.dataLabels)
     case 2        %false position  
         setReq(handles.reqTable, falsePosSolver.reqLabels)
-        setTableCol(handles.stTable, secantSolver.dataLabels)
+        setTableCol(handles.stTable, falsePosSolver.dataLabels)
     case 3        %fixed point
         setReq(handles.reqTable, fixedPointSolver.reqLabels)
-        setTableCol(handles.stTable, secantSolver.dataLabels)
+        setTableCol(handles.stTable, fixedPointSolver.dataLabels)
     case 4        %newton
         setReq(handles.reqTable, newtonRaphSolver.reqLabels)
-        setTableCol(handles.stTable, secantSolver.dataLabels)
+        setTableCol(handles.stTable, newtonRaphSolver.dataLabels)
     case 5        %secant       
         setReq(handles.reqTable, secantSolver.reqLabels)
         setTableCol(handles.stTable, secantSolver.dataLabels)

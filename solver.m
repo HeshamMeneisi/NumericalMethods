@@ -27,6 +27,9 @@ classdef (Abstract) solver < handle
         end
         function approximateError = getAppError(obj)
             approximateError = abs((obj.currentValue-obj.lastValue)/obj.currentValue);
+            if isempty(approximateError)
+                approximateError = Inf;
+            end
         end
         function objectData=get.stateData(obj)
             objectData=obj.stateData;
