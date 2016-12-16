@@ -28,14 +28,16 @@ classdef fixedPointSolver < solver
             obj.currentValue = req(1);
         end
         function plotState(obj)
-            fplot(obj.f);
-            hold on;
-            range = obj.currentValue:0.05*abs(obj.currentValue-obj.lastValue):obj.lastValue;
+            mi = min(obj.currentValue,obj.lastValue)-1;
+            ma = max(obj.currentValue,obj.lastValue)+1;
+            range = mi:0.05*abs(ma-mi):ma;
             y = zeros(1,length(range));
             for i = 1:length(y)
                 y(i) = obj.f(range(i));
             end
-            plot(range, y, 'b', obj.currentValue,obj.f(obj.currentValue), 'r-x');
+            plot(range, y, 'b'...
+                ,obj.currentValue,obj.f(obj.currentValue), 'r-x'...
+                ,[mi ma], [0 0], 'g');
         end
     end
     

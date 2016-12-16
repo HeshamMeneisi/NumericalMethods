@@ -43,19 +43,21 @@ classdef bisectionSolver < solver
             obj.Xu = req(1);
             obj.Xl = req(2);
         end
+        
         function plotState(obj)
             % For demonstration only
-            
-            range = obj.Xl:0.05:obj.Xu;
+            mi = min(obj.Xl,obj.Xu)-1;
+            ma = max(obj.Xl,obj.Xu)+1;
+            range = mi:0.05*(ma-mi):ma;
             y = zeros(1,length(range));
             for i = 1:length(y)
                 y(i) = obj.f(range(i));
             end
             plot(range, y, 'b'...
-                ,[obj.Xl obj.Xu], [0 0], 'g'...
+                ,[mi ma], [0 0], 'g'...
                 ,obj.currentValue, 0, 'r-x'...
-                ,obj.Xl, 0, 'r-x'...
-                ,obj.Xu, 0, 'r-x');
+                ,obj.Xl, obj.f(obj.Xl), 'g-o'...
+                ,obj.Xu, obj.f(obj.Xu), 'g-o');
         end
     end
     
