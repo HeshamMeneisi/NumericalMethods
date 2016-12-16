@@ -20,19 +20,18 @@ classdef bisectionSolver < solver
             a= obj.Xu ;
             b= obj.Xl ;
             if obj.f(a)*obj.f(b)>0
-                disp('error ')
+                disp('Warning: Diverging!')
+            end        
+            p = (a + b)/2;
+            if obj.f(a)*obj.f(p)<0
+                b = p;
             else
-                p = (a + b)/2;
-                if obj.f(a)*obj.f(p)<0
-                    b = p;
-                else
-                    a = p;
-                end
-                obj.Xu =a;
-                obj.Xl =b;
-                p = (a + b)/2;
-                obj.currentValue=p;
+                a = p;
             end
+            obj.Xu =a;
+            obj.Xl =b;
+            p = (a + b)/2;
+            obj.currentValue=p;
             obj.stateData=[ a b obj.currentValue obj.f(a) obj.f(b) obj.f(obj.currentValue) obj.getAppError()];            
         end
     end
