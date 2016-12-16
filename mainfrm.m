@@ -92,6 +92,7 @@ function solveBtn_Callback(hObject, eventdata, handles)
 set(hObject,'Enable','off')
 set(findall(handles.stPanel, '-property', 'enable'), 'enable', 'on')
 set(findall(handles.inputPanel, '-property', 'enable'), 'enable', 'off')
+set(handles.resLabel, 'String', '')
 axes(handles.axes1);
 cla;
 
@@ -274,9 +275,12 @@ function clearTable(htable)
 set(htable,'Data',[])
 
 function terminate(handles)
+global solver;
+
 set(findall(handles.stPanel, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.inputPanel, '-property', 'enable'), 'enable', 'on')
 set(handles.solveBtn,'Enable','on')
+set(handles.resLabel, 'String', solver.currentValue)
 
 function done = step(handles)
 global miter;

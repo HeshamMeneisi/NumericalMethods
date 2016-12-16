@@ -9,6 +9,7 @@ classdef (Abstract) solver < handle
         currentValue
         stateData
         totalTime
+        f
     end
     
     methods (Abstract)
@@ -27,15 +28,20 @@ classdef (Abstract) solver < handle
         end
         function approximateError = getAppError(obj)
             approximateError = abs((obj.currentValue-obj.lastValue)/obj.currentValue);
-            if isempty(approximateError)
+            if obj.f(obj.currentValue) == 0
+                approximateError = 0;
+            elseif isempty(approximateError)
                 approximateError = Inf;
             end
         end
-        function objectData=get.stateData(obj)
-            objectData=obj.stateData;
+        function value=get.stateData(obj)
+            value = obj.stateData;
         end
-        function objectTime=get.totalTime(obj)
-            objectTime=obj.totalTime;
+        function value=get.totalTime(obj)
+            value = obj.totalTime;
+        end
+        function value=get.currentValue(obj)
+            value = obj.currentValue;
         end
     end
     

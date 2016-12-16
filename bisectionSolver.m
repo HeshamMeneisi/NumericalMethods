@@ -7,7 +7,6 @@ classdef bisectionSolver < solver
     end
     
     properties (SetAccess = protected)
-        f
         Xu
         Xl
     end
@@ -21,18 +20,15 @@ classdef bisectionSolver < solver
             b= obj.Xl ;
             if obj.f(a)*obj.f(b)>0
                 disp('Warning: Diverging!')
-            end        
+            end
             p = (a + b)/2;
             if obj.f(a)*obj.f(p)<0
-                b = p;
+                obj.Xl = p;
             else
-                a = p;
+                obj.Xu = p;
             end
-            obj.Xu =a;
-            obj.Xl =b;
-            p = (a + b)/2;
             obj.currentValue=p;
-            obj.stateData=[ a b obj.currentValue obj.f(a) obj.f(b) obj.f(obj.currentValue) obj.getAppError()];            
+            obj.stateData=[a b obj.currentValue obj.f(a) obj.f(b) obj.f(obj.currentValue) obj.getAppError()];
         end
     end
     methods
@@ -50,8 +46,10 @@ classdef bisectionSolver < solver
         
         function plotState(obj)
             % For demonstration only
-            mi = min(obj.Xl,obj.Xu)-1;
-            ma = max(obj.Xl,obj.Xu)+1;
+            xu = obj.stateData(1);
+            xl = obj.stateData(2);
+            mi = min(xl,xu)-1;
+            ma = max(xl,xu)+1;
             range = mi:0.05*(ma-mi):ma;
             y = zeros(1,length(range));
             for i = 1:length(y)
@@ -60,8 +58,8 @@ classdef bisectionSolver < solver
             plot(range, y, 'b'...
                 ,[mi ma], [0 0], 'g'...
                 ,obj.currentValue, 0, 'r-x'...
-                ,obj.Xl, obj.f(obj.Xl), 'g-o'...
-                ,obj.Xu, obj.f(obj.Xu), 'g-o');
+                ,xl, obj.f(xl), 'g-o'...
+                ,xu, obj.f(xu), 'g-o');
         end
     end
     

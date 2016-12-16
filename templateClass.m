@@ -7,7 +7,6 @@ classdef templateClass < solver
     end
     
     properties
-        equation
         r1
         r2
     end
@@ -23,7 +22,7 @@ classdef templateClass < solver
         function obj = templateClass(equation, req)
             % req contain requirements
             obj.totalTime = 0;
-            obj.equation = equation;
+            obj.f = equation;
             obj.r1 = req(1);
             obj.r2 = req(2);
         end

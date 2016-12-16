@@ -6,17 +6,13 @@ classdef fixedPointSolver < solver
         dataLabels = [{'Xi+1'},{'Xi'},{'ep'}];
     end
     
-    properties
-        f
-    end
-    
     methods (Access = protected)
         function step(obj)
             % Do one iteration
             obj.lastValue = obj.currentValue;
-            obj.currentValue = obj.f(obj.currentValue); 
-            % Update obj.currentValue, obj.lastValue, obj.stateData            
-            obj.stateData=[obj.currentValue obj.lastValue obj.getAppError()];            
+            obj.currentValue = obj.f(obj.currentValue);
+            % Update obj.currentValue, obj.lastValue, obj.stateData
+            obj.stateData=[obj.currentValue obj.lastValue obj.getAppError()];
         end
     end
     
@@ -26,7 +22,7 @@ classdef fixedPointSolver < solver
             obj.totalTime = 0;
             obj.f = equation;
             obj.currentValue = req(1);
-            title('Newton''s Method Solution: ');
+            title('Fixed Point Method Solution: ');
             xlabel('X','FontSize',16)
             ylabel('g(x)','FontSize',16)
             hold on
