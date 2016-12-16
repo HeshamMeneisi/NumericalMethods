@@ -42,6 +42,10 @@ classdef bisectionSolver < solver
             obj.f = equation;
             obj.Xu = req(1);
             obj.Xl = req(2);
+            title('Bisection Method Solution: ');
+            xlabel('X','FontSize',16)
+            ylabel('F(x)','FontSize',16)
+            hold on
         end
         
         function plotState(obj)

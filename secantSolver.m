@@ -36,6 +36,10 @@ classdef secantSolver < solver
             obj.eqn = eqn;
             obj.lastValue = req(1);     % set Xi-1
             obj.currentValue = req(2);  % set Xi
+            title('Secant Method Solution: ');
+            xlabel('X','FontSize',16)
+            ylabel('F(x)','FontSize',16)
+            hold on
         end                     
         
         function plotState(obj)       
@@ -52,7 +56,7 @@ classdef secantSolver < solver
                 ,[mi ma], [0 0], 'g'...
                 ,xs(1), ys(1), 'r-x'...
                 ,xs(2), ys(2), 'g-o'...
-                ,xs(3), ys(3), 'g-o');
+                ,xs(3), ys(3), 'g-o');            
         end
     end
     

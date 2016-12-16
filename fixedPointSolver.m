@@ -26,7 +26,12 @@ classdef fixedPointSolver < solver
             obj.totalTime = 0;
             obj.f = equation;
             obj.currentValue = req(1);
+            title('Newton''s Method Solution: ');
+            xlabel('X','FontSize',16)
+            ylabel('g(x)','FontSize',16)
+            hold on
         end
+        
         function plotState(obj)
             mi = min(obj.currentValue,obj.lastValue)-1;
             ma = max(obj.currentValue,obj.lastValue)+1;
